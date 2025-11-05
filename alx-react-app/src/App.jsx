@@ -13,8 +13,8 @@ function App() {
 <div>
   <WelcomeMessage />
   <Header />
-  <MainContent/>
-  <Footer/>
+  <MainContent />
+  <Footer />
 </div>
     </>
   )
