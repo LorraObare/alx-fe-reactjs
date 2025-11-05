@@ -1,6 +1,4 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 import WelcomeMessage from './components/WelcomeMessage.jsx'
 import Header from './components/Header.jsx'
@@ -12,18 +10,12 @@ function App() {
 
   return (
     <>
-      <div>
-        <WelcomeMessage />
-        </div>
-        <div>
-          <Header />
-        </div>
-        <div>
-          <MainContent/>
-        </div>
-        <div>
-          <Footer/>
-        </div>
+<div>
+  <WelcomeMessage />
+  <Header />
+  <MainContent/>
+  <Footer/>
+</div>
     </>
   )
 }
