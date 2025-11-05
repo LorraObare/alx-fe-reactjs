@@ -22,10 +22,10 @@ function App() {
           <MainContent/>
         </div>
         <div>
-          <footer/>
+          <Footer/>
         </div>
     </>
-  );
+  )
 }
 
 export default App
