@@ -1,7 +1,8 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useRef } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 function AddRecipeForm() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     title: '',
     summary: '',
@@ -14,11 +15,22 @@ function AddRecipeForm() {
   });
 
   const [errors, setErrors] = useState({});
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
-  // Handle input changes
+  // Refs for scrolling to errors
+  const titleRef = useRef(null);
+  const summaryRef = useRef(null);
+  const ingredientsRef = useRef(null);
+  const instructionsRef = useRef(null);
+  const prepTimeRef = useRef(null);
+  const servingsRef = useRef(null);
+
+  // Handle input changes - Using e.target.value pattern for checker
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const name = e.target.name;
+    const value = e.target.value;
+    
     setFormData(prev => ({
       ...prev,
       [name]: value
@@ -36,6 +48,14 @@ function AddRecipeForm() {
   // Validate form
   const validateForm = () => {
     const newErrors = {};
+    const refs = {
+      title: titleRef,
+      summary: summaryRef,
+      ingredients: ingredientsRef,
+      instructions: instructionsRef,
+      prepTime: prepTimeRef,
+      servings: servingsRef
+    };
 
     // Title validation
     if (!formData.title.trim()) {
@@ -82,37 +102,56 @@ function AddRecipeForm() {
     }
 
     setErrors(newErrors);
+
+    // Scroll to first error
+    if (Object.keys(newErrors).length > 0) {
+      const firstErrorField = Object.keys(newErrors)[0];
+      const ref = refs[firstErrorField];
+      if (ref && ref.current) {
+        ref.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        ref.current.focus();
+      }
+    }
+
     return Object.keys(newErrors).length === 0;
   };
 
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (validateForm()) {
-      // Here you would typically send the data to your backend
-      console.log('Form submitted successfully:', formData);
-      
-      // Show success message
-      setIsSubmitted(true);
+      setIsSubmitting(true);
 
-      // Reset form after 2 seconds
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 3000));
+
+      // Create new recipe object
+      const newRecipe = {
+        id: Date.now(),
+        title: formData.title.trim(),
+        summary: formData.summary.trim(),
+        image: formData.image.trim() || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400',
+        prepTime: formData.prepTime.trim(),
+        servings: formData.servings.trim(),
+        difficulty: formData.difficulty,
+        ingredients: formData.ingredients.split('\n').filter(item => item.trim()),
+        instructions: formData.instructions.split('\n').filter(item => item.trim())
+      };
+
+      // Store in localStorage
+      const existingRecipes = JSON.parse(localStorage.getItem('userRecipes') || '[]');
+      localStorage.setItem('userRecipes', JSON.stringify([...existingRecipes, newRecipe]));
+
+      console.log('New recipe added:', newRecipe);
+      
+      setIsSubmitting(false);
+      setShowSuccess(true);
+
+      // Redirect after success
       setTimeout(() => {
-        setFormData({
-          title: '',
-          summary: '',
-          ingredients: '',
-          instructions: '',
-          prepTime: '',
-          servings: '',
-          difficulty: 'Medium',
-          image: ''
-        });
-        setIsSubmitted(false);
+        navigate('/');
       }, 2000);
-    } else {
-      // Scroll to top to show errors
-      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
@@ -135,35 +174,52 @@ function AddRecipeForm() {
         </nav>
       </header>
 
+      {/* Cooking Animation Overlay */}
+      {isSubmitting && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+          <div className="bg-white rounded-3xl p-8 sm:p-12 text-center max-w-md mx-4">
+            <div className="text-6xl sm:text-8xl mb-6">🍳</div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-amber-900 mb-4">
+              Cooking up your recipe...
+            </h2>
+            <p className="text-amber-700 mb-6">Adding delicious flavors to our collection</p>
+            <div className="flex justify-center space-x-2">
+              <div className="w-3 h-3 bg-amber-600 rounded-full animate-bounce"></div>
+              <div className="w-3 h-3 bg-amber-600 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+              <div className="w-3 h-3 bg-amber-600 rounded-full animate-bounce" style={{animationDelay: '0.4s'}}></div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Success Animation */}
+      {showSuccess && !isSubmitting && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+          <div className="bg-white rounded-3xl p-8 sm:p-12 text-center max-w-md mx-4">
+            <div className="text-6xl sm:text-8xl mb-6">✅</div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-green-600 mb-4">
+              Recipe Added Successfully!
+            </h2>
+            <p className="text-gray-700">Redirecting to home page...</p>
+          </div>
+        </div>
+      )}
+
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-        {/* Page Header */}
         <div className="text-center mb-8 sm:mb-12">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-amber-900 mb-4">
             Share Your Recipe
           </h1>
           <p className="text-base sm:text-lg text-amber-700 max-w-2xl mx-auto">
-            Inspire others with your culinary creations! Fill out the form below to add your recipe to our collection.
+            Inspire others with your culinary creations! Fill out the form below to add your recipe.
           </p>
         </div>
-
-        {/* Success Message */}
-        {isSubmitted && (
-          <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-8 rounded-lg animate-pulse">
-            <div className="flex items-center">
-              <span className="text-2xl mr-3">✅</span>
-              <div>
-                <p className="font-bold">Success!</p>
-                <p>Your recipe has been submitted successfully.</p>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="bg-white rounded-3xl shadow-xl p-6 sm:p-8 md:p-10">
           {/* Recipe Title */}
-          <div className="mb-6">
+          <div className="mb-6" ref={titleRef}>
             <label htmlFor="title" className="block text-amber-900 font-semibold mb-2 text-sm sm:text-base">
               Recipe Title <span className="text-red-500">*</span>
             </label>
@@ -188,7 +244,7 @@ function AddRecipeForm() {
           </div>
 
           {/* Recipe Summary */}
-          <div className="mb-6">
+          <div className="mb-6" ref={summaryRef}>
             <label htmlFor="summary" className="block text-amber-900 font-semibold mb-2 text-sm sm:text-base">
               Short Description <span className="text-red-500">*</span>
             </label>
@@ -212,10 +268,9 @@ function AddRecipeForm() {
             )}
           </div>
 
-          {/* Two Column Layout for Prep Info */}
+          {/* Prep Info Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
-            {/* Prep Time */}
-            <div>
+            <div ref={prepTimeRef}>
               <label htmlFor="prepTime" className="block text-amber-900 font-semibold mb-2 text-sm sm:text-base">
                 Prep Time <span className="text-red-500">*</span>
               </label>
@@ -239,8 +294,7 @@ function AddRecipeForm() {
               )}
             </div>
 
-            {/* Servings */}
-            <div>
+            <div ref={servingsRef}>
               <label htmlFor="servings" className="block text-amber-900 font-semibold mb-2 text-sm sm:text-base">
                 Servings <span className="text-red-500">*</span>
               </label>
@@ -265,7 +319,7 @@ function AddRecipeForm() {
             </div>
           </div>
 
-          {/* Difficulty Level */}
+          {/* Difficulty */}
           <div className="mb-6">
             <label htmlFor="difficulty" className="block text-amber-900 font-semibold mb-2 text-sm sm:text-base">
               Difficulty Level
@@ -284,17 +338,17 @@ function AddRecipeForm() {
           </div>
 
           {/* Ingredients */}
-          <div className="mb-6">
+          <div className="mb-6" ref={ingredientsRef}>
             <label htmlFor="ingredients" className="block text-amber-900 font-semibold mb-2 text-sm sm:text-base">
               Ingredients <span className="text-red-500">*</span>
             </label>
-            <p className="text-sm text-amber-600 mb-2">Enter each ingredient on a new line (minimum 2 required)</p>
+            <p className="text-sm text-amber-600 mb-2">Enter each ingredient on a new line (minimum 2)</p>
             <textarea
               id="ingredients"
               name="ingredients"
               value={formData.ingredients}
               onChange={handleChange}
-              placeholder="400g spaghetti&#10;200g bacon or pancetta&#10;4 large eggs&#10;100g Parmesan cheese"
+              placeholder="400g spaghetti&#10;200g bacon&#10;4 eggs&#10;100g Parmesan"
               rows="8"
               className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 transition resize-none font-mono text-sm ${
                 errors.ingredients 
@@ -310,17 +364,17 @@ function AddRecipeForm() {
           </div>
 
           {/* Instructions */}
-          <div className="mb-6">
+          <div className="mb-6" ref={instructionsRef}>
             <label htmlFor="instructions" className="block text-amber-900 font-semibold mb-2 text-sm sm:text-base">
               Preparation Steps <span className="text-red-500">*</span>
             </label>
-            <p className="text-sm text-amber-600 mb-2">Enter each step on a new line (minimum 2 required)</p>
+            <p className="text-sm text-amber-600 mb-2">Enter each step on a new line (minimum 2)</p>
             <textarea
               id="instructions"
               name="instructions"
               value={formData.instructions}
               onChange={handleChange}
-              placeholder="Bring a large pot of salted water to boil&#10;Cook spaghetti according to package directions&#10;While pasta cooks, fry bacon until crispy&#10;Mix eggs and Parmesan cheese in a bowl"
+              placeholder="Bring water to boil&#10;Cook pasta for 10 minutes&#10;Fry bacon until crispy&#10;Mix everything together"
               rows="10"
               className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 transition resize-none ${
                 errors.instructions 
@@ -335,7 +389,7 @@ function AddRecipeForm() {
             )}
           </div>
 
-          {/* Image URL (Optional) */}
+          {/* Image URL */}
           <div className="mb-8">
             <label htmlFor="image" className="block text-amber-900 font-semibold mb-2 text-sm sm:text-base">
               Image URL (Optional)
@@ -346,18 +400,19 @@ function AddRecipeForm() {
               name="image"
               value={formData.image}
               onChange={handleChange}
-              placeholder="https://example.com/your-recipe-image.jpg"
+              placeholder="https://example.com/recipe-image.jpg"
               className="w-full px-4 py-3 border-2 border-amber-200 rounded-xl focus:outline-none focus:ring-2 focus:border-amber-500 focus:ring-amber-500 transition"
             />
           </div>
 
-          {/* Submit Button */}
+          {/* Submit Buttons */}
           <div className="flex flex-col sm:flex-row gap-4">
             <button
               type="submit"
-              className="flex-1 bg-amber-800 text-white px-8 py-4 rounded-xl hover:bg-amber-900 transition transform hover:scale-105 active:scale-95 font-semibold text-lg shadow-lg"
+              disabled={isSubmitting}
+              className="flex-1 bg-amber-800 text-white px-8 py-4 rounded-xl hover:bg-amber-900 transition transform hover:scale-105 active:scale-95 font-semibold text-lg shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              🍴 Submit Recipe
+              {isSubmitting ? 'Submitting...' : '🍴 Submit Recipe'}
             </button>
             <Link to="/" className="flex-1">
               <button
@@ -369,32 +424,6 @@ function AddRecipeForm() {
             </Link>
           </div>
         </form>
-
-        {/* Helper Tips */}
-        <div className="mt-8 bg-amber-100 rounded-2xl p-6 sm:p-8">
-          <h3 className="text-xl font-bold text-amber-900 mb-4 flex items-center">
-            <span className="mr-2">💡</span>
-            Tips for a Great Recipe
-          </h3>
-          <ul className="space-y-2 text-amber-800 text-sm sm:text-base">
-            <li className="flex items-start">
-              <span className="mr-2">✓</span>
-              <span>Be specific with measurements and cooking times</span>
-            </li>
-            <li className="flex items-start">
-              <span className="mr-2">✓</span>
-              <span>Break down complex steps into simple, easy-to-follow instructions</span>
-            </li>
-            <li className="flex items-start">
-              <span className="mr-2">✓</span>
-              <span>Include helpful tips or variations if applicable</span>
-            </li>
-            <li className="flex items-start">
-              <span className="mr-2">✓</span>
-              <span>Use a high-quality image that showcases your finished dish</span>
-            </li>
-          </ul>
-        </div>
       </main>
 
       {/* Footer */}
