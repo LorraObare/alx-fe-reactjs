@@ -1,14 +1,59 @@
+
 [
   {
     "id": 1,
     "title": "Spaghetti Carbonara",
     "summary": "A classic Italian pasta dish with eggs, cheese, bacon, and black pepper.",
-    "image": "https://via.placeholder.com/150"
+    "image": "/images/SpaghettiCarbonara.jpeg"
   },
   {
     "id": 2,
     "title": "Chicken Tikka Masala",
     "summary": "Chunks of grilled chicken (tikka) cooked in a smooth buttery & creamy tomato based gravy.",
-    "image": "https://via.placeholder.com/150"
-  }
+    "image": "/images/ChickenTikkaMasala.jpeg"
+  },
+
+{
+    "id": 3,
+    "title": "Vegetable Stir Fry",
+    "summary": "A quick and healthy stir fry with a mix of fresh vegetables and a savory sauce.",
+    "image": "/images/StirFryVegetables.jpeg"
+},
+
+{
+    "id": 4,
+    "title": "Beef Tacos",
+    "summary": "Crispy taco shells filled with seasoned ground beef, lettuce, cheese, and salsa.",
+    "image": "images/BeefTacos.jpeg"
+},
+{
+    "id": 5,
+    "title": "Chocolate Chip Cookies",
+    "summary": "Classic cookies loaded with chocolate chips, perfect for a sweet treat.",
+    "image": "/images/ChocolateChipCookies.jpeg"
+},
+{
+    "id": 6,
+    "title": "Caesar Salad",
+    "summary": "A fresh salad with romaine lettuce, croutons, Parmesan cheese, and Caesar dressing.",
+    "image": "/images/CaesarSalad.jpeg"
+},
+{
+    "id": 7,
+    "title": "Margherita Pizza",
+    "summary": "A simple yet delicious pizza topped with fresh tomatoes, mozzarella cheese, and basil.",
+    "image": "/images/MargheritaPizza.jpeg"
+},
+{
+    "id": 8,
+    "title": "Lemon Garlic Shrimp",
+    "summary": "Succulent shrimp cooked in a zesty lemon garlic sauce, perfect over pasta or rice.",
+    "image": "/images/LemonGarlicShrimp.jpeg"
+},
+{
+    "id": 9,
+    "title": "Pancakes",
+    "summary": "Fluffy pancakes served with maple syrup and fresh berries for a delightful breakfast.",
+    "image": "/images/Pancakes.jpeg"
+}
 ]
