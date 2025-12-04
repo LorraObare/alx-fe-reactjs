@@ -28,9 +28,11 @@ function HomePage() {
               <a href="#" className="text-amber-900 hover:text-amber-700 transition">About</a>
               <a href="#" className="text-amber-900 hover:text-amber-700 transition">Contact</a>
             </div>
-            <button className="bg-amber-800 text-white px-4 py-2 sm:px-6 sm:py-2 rounded-full hover:bg-amber-900 transition text-sm sm:text-base">
-              Share
-            </button>
+            <Link to="/add-recipe">
+              <button className="bg-amber-800 text-white px-4 py-2 sm:px-6 sm:py-2 rounded-full hover:bg-amber-900 transition text-sm sm:text-base">
+                Share Recipe
+              </button>
+            </Link>
           </div>
         </nav>
       </header>
@@ -48,9 +50,16 @@ function HomePage() {
             <p className="text-base sm:text-lg md:text-xl text-amber-700 mb-6 sm:mb-8 max-w-2xl mx-auto px-4">
               Discover delicious recipes from our community. Share your culinary creations and inspire others.
             </p>
-            <button className="bg-amber-800 text-white px-6 sm:px-8 py-3 rounded-full text-base sm:text-lg hover:bg-amber-900 transition transform hover:scale-105 active:scale-95">
-              Explore Recipes
-            </button>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <button className="bg-amber-800 text-white px-6 sm:px-8 py-3 rounded-full text-base sm:text-lg hover:bg-amber-900 transition transform hover:scale-105 active:scale-95">
+                Explore Recipes
+              </button>
+              <Link to="/add-recipe">
+                <button className="bg-white text-amber-800 border-2 border-amber-800 px-6 sm:px-8 py-3 rounded-full text-base sm:text-lg hover:bg-amber-50 transition transform hover:scale-105 active:scale-95">
+                  + Add Your Recipe
+                </button>
+              </Link>
+            </div>
           </div>
         </div>
       </section>
