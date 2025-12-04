@@ -8,7 +8,12 @@ function HomePage() {
     // Load recipe data from data.json
     fetch('/src/data.json')
       .then(response => response.json())
-      .then(data => setRecipes(data))
+      .then(data => {
+        // Also load user-submitted recipes from localStorage
+        const userRecipes = JSON.parse(localStorage.getItem('userRecipes') || '[]');
+        // Combine both sources
+        setRecipes([...data, ...userRecipes]);
+      })
       .catch(error => console.error('Error loading recipes:', error));
   }, []);
 
@@ -23,8 +28,8 @@ function HomePage() {
               <h1 className="text-xl sm:text-2xl font-bold text-amber-900">Recipe Haven</h1>
             </div>
             <div className="hidden md:flex space-x-6 lg:space-x-8">
-              <a href="#" className="text-amber-900 hover:text-amber-700 transition">Home</a>
-              <a href="#" className="text-amber-900 hover:text-amber-700 transition">Recipes</a>
+              <a href="#home" className="text-amber-900 hover:text-amber-700 transition">Home</a>
+              <a href="recipes" className="text-amber-900 hover:text-amber-700 transition">Recipes</a>
               <a href="#" className="text-amber-900 hover:text-amber-700 transition">About</a>
               <a href="#" className="text-amber-900 hover:text-amber-700 transition">Contact</a>
             </div>
@@ -54,7 +59,7 @@ function HomePage() {
               <button className="bg-amber-800 text-white px-6 sm:px-8 py-3 rounded-full text-base sm:text-lg hover:bg-amber-900 transition transform hover:scale-105 active:scale-95">
                 Explore Recipes
               </button>
-              <Link to="/add-recipe">
+              <Link to="/recipes">
                 <button className="bg-white text-amber-800 border-2 border-amber-800 px-6 sm:px-8 py-3 rounded-full text-base sm:text-lg hover:bg-amber-50 transition transform hover:scale-105 active:scale-95">
                   + Add Your Recipe
                 </button>
